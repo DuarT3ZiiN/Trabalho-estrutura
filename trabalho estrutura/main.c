@@ -6,7 +6,8 @@
 
 #define MAX 300
 
-typedef struct Menu {
+typedef struct Menu
+{
     int busca;
     int opcao;
     int resultadoBusca;
@@ -16,38 +17,46 @@ typedef struct Menu {
     char buscaAlbum[40];
 } Menu;
 
-typedef struct Artistas{
+typedef struct Artistas
+{
     char nome[100];
     char genero[25];
     char album[40];
 } Artistas;
 
-typedef struct Lista{
+typedef struct Lista
+{
     Artistas *AB;
     int quantidade;
 } Lista;
 
-int sort(const void *a, const void *b){
-    return strcmp(((Artistas*)a)->nome, ((Artistas*)b)->nome);
+int sort(const void *a, const void *b)
+{
+    return strcmp(((Artistas *)a)->nome, ((Artistas *)b)->nome);
 }
 
-void iniciandoLista(Lista *lista){
+void iniciandoLista(Lista *lista)
+{
     lista->AB = NULL;
     lista->quantidade = 0;
 }
 
-void inserindoArtistas(Lista *lista, const Artistas *artistas){
+void inserindoArtistas(Lista *lista, const Artistas *artistas)
+{
     lista->quantidade++;
     lista->AB = (Artistas *)realloc(lista->AB, lista->quantidade * sizeof(Artistas));
-    if (lista->AB == NULL){
+    if (lista->AB == NULL)
+    {
         printf("Erro.\n");
         exit(1);
     }
     lista->AB[lista->quantidade - 1] = *artistas;
 }
 
-void imprimirLista(Lista *lista){
-    for (int i = 0; i < lista->quantidade; i++){
+void imprimirLista(Lista *lista)
+{
+    for (int i = 0; i < lista->quantidade; i++)
+    {
         printf("Nome: %s\n", lista->AB[i].nome);
         printf("Genero: %s\n", lista->AB[i].genero);
         printf("Album:\n%s\n", lista->AB[i].album);
@@ -55,27 +64,33 @@ void imprimirLista(Lista *lista){
     }
 }
 
-void liberarLista(Lista *lista){
+void liberarLista(Lista *lista)
+{
     free(lista->AB);
     lista->AB = NULL;
     lista->quantidade = 0;
 }
 
-int buscaBinaria(Lista *lista, char *nome){
+int buscaBinaria(Lista *lista, char *nome)
+{
     int esq = 0;
     int dir = lista->quantidade - 1;
 
-    while (esq <= dir){
+    while (esq <= dir)
+    {
         int referencia = esq + (dir - esq) / 2;
         int cmp = strcmp(lista->AB[referencia].nome, nome);
 
-        if (cmp == 0){
+        if (cmp == 0)
+        {
             return referencia;
         }
-        else if (cmp < 0){
+        else if (cmp < 0)
+        {
             esq = referencia + 1;
         }
-        else{
+        else
+        {
             dir = referencia - 1;
         }
     }
@@ -83,54 +98,64 @@ int buscaBinaria(Lista *lista, char *nome){
     return -1;
 }
 
-void ordenar(Lista *lista, const Artistas *artistas, const char *arquivo){
+void ordenar(Lista *lista, const Artistas *artistas, const char *arquivo)
+{
     int pos0 = 0;
 
-    while (pos0 < lista->quantidade && strcmp(artistas->nome, lista->AB[pos0].nome) > 0){
+    while (pos0 < lista->quantidade && strcmp(artistas->nome, lista->AB[pos0].nome) > 0)
+    {
         pos0++;
     }
 
     lista->quantidade++;
     lista->AB = (Artistas *)realloc(lista->AB, lista->quantidade * sizeof(Artistas));
 
-    if (lista->AB == NULL){
+    if (lista->AB == NULL)
+    {
         perror("Erro.\n");
         exit(1);
     }
 
-    for (int i = lista->quantidade - 1; i > pos0; i--){
+    for (int i = lista->quantidade - 1; i > pos0; i--)
+    {
         lista->AB[i] = lista->AB[i - 1];
     }
 
     lista->AB[pos0] = *artistas;
 
     FILE *albumArquivo = fopen(arquivo, "w");
-    if (albumArquivo == NULL){
+    if (albumArquivo == NULL)
+    {
         perror("Erro ao abrir arquivo.\n");
         exit(1);
     }
 
-    for (int i = 0; i < lista->quantidade; i++){
+    for (int i = 0; i < lista->quantidade; i++)
+    {
         fprintf(albumArquivo, "%s\n%s\n%s\n%s\n-------------\n", lista->AB[i].nome, lista->AB[i].genero, lista->AB[i].album);
     }
 
     fclose(albumArquivo);
 }
 
-void removerArtista(Lista *lista, int posicao){
-    if (posicao < 0 || posicao >= lista->quantidade){
+void removerArtista(Lista *lista, int posicao)
+{
+    if (posicao < 0 || posicao >= lista->quantidade)
+    {
         perror("Posicao invalida.\n");
         return;
     }
 
     FILE *arquivoTemporario = fopen("temporario.txt", "w");
-    if (arquivoTemporario == NULL){
+    if (arquivoTemporario == NULL)
+    {
         perror("Erro.\n");
         exit(1);
     }
 
     FILE *arquivo = fopen("artistas.txt", "r");
-    if (arquivo == NULL){
+    if (arquivo == NULL)
+    {
         perror("Erro.\n");
         fclose(arquivoTemporario);
         exit(1);
@@ -140,19 +165,25 @@ void removerArtista(Lista *lista, int posicao){
     char parametroTexto[MAX];
     Artistas artistas;
 
-    while (fgets(parametroTexto, MAX, arquivo)){
+    while (fgets(parametroTexto, MAX, arquivo))
+    {
         parametroTexto[strcspn(parametroTexto, "\n")] = '\0';
 
-        if (strcmp(parametroTexto, "-------------") == 0){
-            if (parametro >= 4){
-                if (parametro / 4 != posicao){
+        if (strcmp(parametroTexto, "-------------") == 0)
+        {
+            if (parametro >= 4)
+            {
+                if (parametro / 4 != posicao)
+                {
                     fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", artistas.nome, artistas.genero, artistas.album);
                 }
             }
             parametro = 0;
         }
-        else{
-            switch (parametro){
+        else
+        {
+            switch (parametro)
+            {
             case 0:
                 strcpy(artistas.nome, parametroTexto);
                 break;
@@ -174,32 +205,38 @@ void removerArtista(Lista *lista, int posicao){
     remove("artistas.txt");
     rename("temp.txt", "artistas.txt");
 
-    for (int i = posicao; i < lista->quantidade - 1; i++){
+    for (int i = posicao; i < lista->quantidade - 1; i++)
+    {
         lista->AB[i] = lista->AB[i + 1];
     }
 
     lista->quantidade--;
     lista->AB = (Artistas *)realloc(lista->AB, lista->quantidade * sizeof(Artistas));
-    if (lista->quantidade == 0){
+    if (lista->quantidade == 0)
+    {
         free(lista->AB);
         lista->AB = NULL;
     }
 }
 
-void editarArtista(Lista *lista, int posicao, const Artistas *novoArtista){
-    if (posicao < 0 || posicao >= lista->quantidade){
+void editarArtista(Lista *lista, int posicao, const Artistas *novoArtista)
+{
+    if (posicao < 0 || posicao >= lista->quantidade)
+    {
         perror("Posicao invalida.\n");
         return;
     }
 
     FILE *arquivoTemporario = fopen("temp.txt", "w");
-    if (arquivoTemporario == NULL){
+    if (arquivoTemporario == NULL)
+    {
         perror("Erro.\n");
         exit(1);
     }
 
     FILE *arquivo = fopen("artistas.txt", "r");
-    if (arquivo == NULL){
+    if (arquivo == NULL)
+    {
         perror("Erro.\n");
         fclose(arquivoTemporario);
         exit(1);
@@ -209,22 +246,29 @@ void editarArtista(Lista *lista, int posicao, const Artistas *novoArtista){
     char parametroTexto[MAX];
     Artistas artistas;
 
-    while (fgets(parametroTexto, MAX, arquivo)){
+    while (fgets(parametroTexto, MAX, arquivo))
+    {
         parametroTexto[strcspn(parametroTexto, "\n")] = '\0';
 
-        if (strcmp(parametroTexto, "-------------") == 0){
-            if (parametro >= 4){
-                if (parametro / 4 != posicao){
+        if (strcmp(parametroTexto, "-------------") == 0)
+        {
+            if (parametro >= 4)
+            {
+                if (parametro / 4 != posicao)
+                {
                     fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", artistas.nome, artistas.genero, artistas.album);
                 }
-                else{
+                else
+                {
                     fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", novoArtista->nome, novoArtista->genero, novoArtista->album);
                 }
             }
             parametro = 0;
         }
-        else{
-            switch (parametro){
+        else
+        {
+            switch (parametro)
+            {
             case 0:
                 strcpy(artistas.nome, parametroTexto);
                 break;
@@ -248,7 +292,8 @@ void editarArtista(Lista *lista, int posicao, const Artistas *novoArtista){
     lista->AB[posicao] = *novoArtista;
 }
 
-int buscaSequencial(Lista *lista, char *album){
+int buscaSequencial(Lista *lista, char *album)
+{
     for (int i = 0; i < lista->quantidade; i++)
     {
         if (strstr(lista->AB[i].album, album) != NULL)
@@ -259,8 +304,8 @@ int buscaSequencial(Lista *lista, char *album){
     return -1;
 }
 
-
-main(){
+main()
+{
 
     Lista lista;
     Menu Menu;
@@ -277,17 +322,22 @@ main(){
     Artistas artistas;
     int parametro = 0;
 
-    while (fgets(parametroTexto, MAX, arquivo)){
+    while (fgets(parametroTexto, MAX, arquivo))
+    {
         parametroTexto[strcspn(parametroTexto, "\n")] = '\0';
 
-        if (strcmp(parametroTexto, "-------------") == 0){
-            if (parametro >= 4){
+        if (strcmp(parametroTexto, "-------------") == 0)
+        {
+            if (parametro >= 4)
+            {
                 InserindoArtista(&lista, &artistas);
             }
             parametro = 0;
         }
-        else{
-            switch (parametro){
+        else
+        {
+            switch (parametro)
+            {
             case 0:
                 strcpy(artistas.nome, parametroTexto);
                 break;
@@ -307,9 +357,10 @@ main(){
     }
     fclose(arquivo);
 
-//parei aqui, ainda presica debugar
+    // parei aqui, ainda presica debugar
 
- do{
+    do
+    {
         printf("\nMenu de Interacao :\n");
         printf("(1) - Buscar Artistas ou Bandas por nome\n");
         printf("(2) - Buscar Artistas ou Bandas por álbum\n");
@@ -321,7 +372,8 @@ main(){
         printf("\nEscolha uma das opcoes(Informe o valor): ");
         scanf("%d", &Menu.opcao);
 
-        switch (Menu.opcao){
+        switch (Menu.opcao)
+        {
         case 1:
             printf("\n\nInforme o Artista ou Banda para pesquisa: ");
             getchar();
@@ -330,13 +382,15 @@ main(){
 
             Menu.busca = buscaBinaria(&lista, Menu.buscaNome);
 
-            if (Menu.busca != -1){
+            if (Menu.busca != -1)
+            {
                 printf("\nArtista ou Banda encontrado\n");
                 printf("Nome: %s\n", lista.AB[Menu.busca].nome);
                 printf("Gênero Musical: %s\n", lista.AB[Menu.busca].genero);
                 printf("Álbuns:\n%s\n", lista.AB[Menu.busca].album);
             }
-            else{
+            else
+            {
                 printf("Artista ou Banda nao encontrado\n");
             }
             break;
@@ -377,7 +431,7 @@ main(){
 
             Ordenando(&lista, &artistas, "artistas.txt");
             printf("\nArtista adicionado.\n");
-        break;
+            break;
 
         case 4:
             printf("\n\nInforme o nome do Artista ou Banda: ");
@@ -385,9 +439,10 @@ main(){
             fgets(Menu.buscaNome, sizeof(Menu.buscaNome), stdin);
             Menu.buscaNome[strcspn(Menu.buscaNome, "\n")] = '\0';
 
-           Menu.busca = buscaBinaria(&lista, Menu.buscaNome);
+            Menu.busca = buscaBinaria(&lista, Menu.buscaNome);
 
-            if (Menu.busca != -1){
+            if (Menu.busca != -1)
+            {
                 printf("\nInforme o novo Nome do Artisa ou Banda: ");
                 fgets(Menu.novaMusica, sizeof(Menu.novaMusica), stdin);
                 Menu.novaMusica[strcspn(Menu.novaMusica, "\n")] = '\0';
@@ -396,18 +451,17 @@ main(){
                 fgets(Menu.novoGenero, sizeof(Menu.novoGenero), stdin);
                 Menu.novoGenero[strcspn(Menu.novoGenero, "\n")] = '\0';
 
-            
                 strcpy(artistas.nome, Menu.novaMusica);
                 strcpy(artistas.genero, Menu.novoGenero);
-
 
                 editar_Artista(&lista, Menu.busca, &artistas);
                 printf("\nArtista editado.\n");
             }
-            else{
+            else
+            {
                 printf("\nArtista nao encontrado para ser editado.\n");
             }
-        break;
+            break;
 
         case 5:
             printf("\n\nInforme o nome do artista para ser  removido: ");
@@ -417,15 +471,16 @@ main(){
 
             Menu.busca = buscaBinaria(&lista, Menu.buscaNome);
 
-            if (Menu.busca != -1){
+            if (Menu.busca != -1)
+            {
                 removerArtista(&lista, Menu.busca);
                 printf("\nArtista removido.\n");
             }
-            else{
+            else
+            {
                 printf("\nArtista nao encontrado.\n");
             }
-        break;
-
+            break;
 
         case 6:
             printf("\nLista de Artista e Bandas \n\n");
@@ -447,6 +502,4 @@ main(){
     liberarLista(&lista);
 
     return 0;
-
-
 }
