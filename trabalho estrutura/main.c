@@ -51,7 +51,7 @@ void imprimirLista(Lista *lista){
         printf("Nome: %s\n", lista->AB[i].nome);
         printf("Genero: %s\n", lista->AB[i].genero);
         printf("Album:\n%s\n", lista->AB[i].album);
-        printf("==================\n");
+        printf("-------------\n");
     }
 }
 
@@ -111,7 +111,7 @@ void ordenar(Lista *lista, const Artistas *artistas, const char *arquivo){
     }
 
     for (int i = 0; i < lista->quantidade; i++){
-        fprintf(albumArquivo, "%s\n%s\n%s\n%s\n==========\n", lista->AB[i].nome, lista->AB[i].genero, lista->AB[i].album);
+        fprintf(albumArquivo, "%s\n%s\n%s\n%s\n-------------\n", lista->AB[i].nome, lista->AB[i].genero, lista->AB[i].album);
     }
 
     fclose(albumArquivo);
@@ -143,10 +143,10 @@ void removerArtista(Lista *lista, int posicao){
     while (fgets(parametroTexto, MAX, arquivo)){
         parametroTexto[strcspn(parametroTexto, "\n")] = '\0';
 
-        if (strcmp(parametroTexto, "==========") == 0){
+        if (strcmp(parametroTexto, "-------------") == 0){
             if (parametro >= 4){
                 if (parametro / 4 != posicao){
-                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n==========\n", artistas.nome, artistas.genero, artistas.album);
+                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", artistas.nome, artistas.genero, artistas.album);
                 }
             }
             parametro = 0;
@@ -212,13 +212,13 @@ void editarArtista(Lista *lista, int posicao, const Artistas *novoArtista){
     while (fgets(parametroTexto, MAX, arquivo)){
         parametroTexto[strcspn(parametroTexto, "\n")] = '\0';
 
-        if (strcmp(parametroTexto, "==========") == 0){
+        if (strcmp(parametroTexto, "-------------") == 0){
             if (parametro >= 4){
                 if (parametro / 4 != posicao){
-                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n==========\n", artistas.nome, artistas.genero, artistas.album);
+                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", artistas.nome, artistas.genero, artistas.album);
                 }
                 else{
-                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n==========\n", novoArtista->nome, novoArtista->genero, novoArtista->album);
+                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", novoArtista->nome, novoArtista->genero, novoArtista->album);
                 }
             }
             parametro = 0;
@@ -280,7 +280,7 @@ main(){
     while (fgets(parametroTexto, MAX, arquivo)){
         parametroTexto[strcspn(parametroTexto, "\n")] = '\0';
 
-        if (strcmp(parametroTexto, "==========") == 0){
+        if (strcmp(parametroTexto, "-------------") == 0){
             if (parametro >= 4){
                 InserindoArtista(&lista, &artistas);
             }
@@ -307,7 +307,7 @@ main(){
     }
     fclose(arquivo);
 
-//parei aqui 
+//parei aqui, ainda presica debugar
 
  do{
         printf("\nMenu de Interacao :\n");
@@ -323,19 +323,18 @@ main(){
 
         switch (Menu.opcao){
         case 1:
-            printf("\n\nInforme o Artista ao Banda para pesquisa: ");
+            printf("\n\nInforme o Artista ou Banda para pesquisa: ");
             getchar();
-            fgets(Menu.BuscandoPorNome, sizeof(Menu.BuscandoPorNome), stdin);
-            Menu.BuscandoPorNome[strcspn(Menu.BuscandoPorNome, "\n")] = '\0';
+            fgets(Menu.busca, sizeof(Menu.busca), stdin);
+            Menu.busca[strcspn(Menu.buscaNome, "\n")] = '\0';
 
-            Menu.Busca = buscaBinaria(&listaab, Menu.BuscandoPorNome);
+            Menu.busca = buscaBinaria(&lista, Menu.buscaNome);
 
-            if (Menu.Busca != -1){
-                printf("\nArtista ou Bandaencontrado\n");
-                printf("Nome: %s\n", listaab.AB[Menu.Busca].nome);
-                printf("Gênero Musical: %s\n", listaab.AB[Menu.Busca].tipo);
-                printf("Local de Nascimento: %s\n", listaab.AB[Menu.Busca].nacionalidade);
-                printf("Álbuns:\n%s\n", listaab.AB[Menu.Busca].albuns);
+            if (Menu.busca != -1){
+                printf("\nArtista ou Banda encontrado\n");
+                printf("Nome: %s\n", lista.AB[Menu.busca].nome);
+                printf("Gênero Musical: %s\n", lista.AB[Menu.busca].genero);
+                printf("Álbuns:\n%s\n", lista.AB[Menu.busca].album);
             }
             else{
                 printf("Artista ou Banda nao encontrado\n");
@@ -345,71 +344,64 @@ main(){
         case 2:
             printf("\n\nInforme o nome do album que você deseja encontrar: ");
             getchar();
-            fgets(Menu.BuscandoPorAlbum, sizeof(Menu.BuscandoPorAlbum), stdin);
-            Menu.BuscandoPorAlbum[strcspn(Menu.BuscandoPorAlbum, "\n")] = '\0';
+            fgets(Menu.buscaAlbum, sizeof(Menu.buscaAlbum), stdin);
+            Menu.buscaAlbum[strcspn(Menu.buscaAlbum, "\n")] = '\0';
 
-            Menu.ResulradoBusca = buscaSequencial(&listaab, Menu.BuscandoPorAlbum);
+            Menu.resultadoBusca = buscaSequencial(&lista, Menu.buscaAlbum);
 
-            if (Menu.ResulradoBusca != -1)
+            if (Menu.resultadoBusca != -1)
             {
-                printf("\nAlbum encontrado\n Especicacoes do Criador do Album:\n");
-                printf("Nome: %s\n", listaab.AB[Menu.ResulradoBusca].nome);
-                printf("Albuns:\n%s\n", listaab.AB[Menu.ResulradoBusca].albuns);
+                printf("\nAlbum encontrado\n Especificacoes do Criador do Album:\n");
+                printf("Nome: %s\n", lista.AB[Menu.resultadoBusca].nome);
+                printf("Albuns:\n%s\n", lista.AB[Menu.resultadoBusca].album);
             }
             else
             {
-                printf("\nalbum nao encontrado. \n");
+                printf("\nAlbum nao encontrado. \n");
             }
             break;
 
         case 3:
             printf("\nInfomre o nome do Artista ou Banda: ");
             getchar();
-            fgets(artista.nome, sizeof(artista.nome), stdin);
-            artista.nome[strcspn(artista.nome, "\n")] = '\0';
+            fgets(artistas.nome, sizeof(artistas.nome), stdin);
+            artistas.nome[strcspn(artistas.nome, "\n")] = '\0';
 
             printf("Informe o Genero Musical: ");
-            fgets(artista.tipo, sizeof(artista.tipo), stdin);
-            artista.tipo[strcspn(artista.tipo, "\n")] = '\0';
-
-            printf("Informe a Nacionalidade: ");
-            fgets(artista.nacionalidade, sizeof(artista.nacionalidade), stdin);
-            artista.nacionalidade[strcspn(artista.nacionalidade, "\n")] = '\0';
+            fgets(artistas.genero, sizeof(artistas.genero), stdin);
+            artistas.genero[strcspn(artistas.genero, "\n")] = '\0';
 
             printf("Informe os Albuns (Separe com Virgula): ");
-            fgets(artista.albuns, sizeof(artista.albuns), stdin);
-            artista.albuns[strcspn(artista.albuns, "\n")] = '\0';
+            fgets(artistas.album, sizeof(artistas.album), stdin);
+            artistas.album[strcspn(artistas.album, "\n")] = '\0';
 
-            Ordenando(&listaab, &artista, "artistas.txt");
+            Ordenando(&lista, &artistas, "artistas.txt");
             printf("\nArtista adicionado.\n");
         break;
 
         case 4:
             printf("\n\nInforme o nome do Artista ou Banda: ");
             getchar();
-            fgets(Menu.BuscandoPorNome, sizeof(Menu.BuscandoPorNome), stdin);
-            Menu.BuscandoPorNome[strcspn(Menu.BuscandoPorNome, "\n")] = '\0';
+            fgets(Menu.buscaNome, sizeof(Menu.buscaNome), stdin);
+            Menu.buscaNome[strcspn(Menu.buscaNome, "\n")] = '\0';
 
-           Menu.Busca = buscaBinaria(&listaab, Menu.BuscandoPorNome);
+           Menu.busca = buscaBinaria(&lista, Menu.buscaNome);
 
-            if (Menu.Busca != -1){
+            if (Menu.busca != -1){
                 printf("\nInforme o novo Nome do Artisa ou Banda: ");
-                fgets(Menu.NovoNome, sizeof(Menu.NovoNome), stdin);
-                Menu.NovoNome[strcspn(Menu.NovoNome, "\n")] = '\0';
+                fgets(Menu.novaMusica, sizeof(Menu.novaMusica), stdin);
+                Menu.novaMusica[strcspn(Menu.novaMusica, "\n")] = '\0';
 
                 printf("Informe o novo genero musical: ");
-                fgets(Menu.NovoGenero, sizeof(Menu.NovoGenero), stdin);
-                Menu.NovoGenero[strcspn(Menu.NovoGenero, "\n")] = '\0';
+                fgets(Menu.novoGenero, sizeof(Menu.novoGenero), stdin);
+                Menu.novoGenero[strcspn(Menu.novoGenero, "\n")] = '\0';
 
-                printf("Informe a nova nacionalidade: ");
-                fgets(Menu.NovaNacionalidade, sizeof(Menu.NovaNacionalidade), stdin);
-                Menu.NovaNacionalidade[strcspn(Menu.NovaNacionalidade, "\n")] = '\0';
+            
+                strcpy(artistas.nome, Menu.novaMusica);
+                strcpy(artistas.genero, Menu.novoGenero);
 
-                strcpy(artista.nome, Menu.NovoNome);
-                strcpy(artista.tipo, Menu.NovoGenero);
-                strcpy(artista.nacionalidade, Menu.NovaNacionalidade);
 
-                editar_Artista(&listaab, Menu.Busca, &artista);
+                editar_Artista(&lista, Menu.busca, &artistas);
                 printf("\nArtista editado.\n");
             }
             else{
@@ -418,15 +410,15 @@ main(){
         break;
 
         case 5:
-            printf("\n\nInforme o nome do artista a ser removido: ");
+            printf("\n\nInforme o nome do artista para ser  removido: ");
             getchar();
-            fgets(Menu.BuscandoPorNome, sizeof(Menu.BuscandoPorNome), stdin);
-            Menu.BuscandoPorNome[strcspn(Menu.BuscandoPorNome, "\n")] = '\0';
+            fgets(Menu.buscaNome, sizeof(Menu.buscaNome), stdin);
+            Menu.buscaNome[strcspn(Menu.buscaNome, "\n")] = '\0';
 
-            Menu.Busca = buscaBinaria(&listaab, Menu.BuscandoPorNome);
+            Menu.busca = buscaBinaria(&lista, Menu.buscaNome);
 
-            if (Menu.Busca != -1){
-                removerArtista(&listaab, Menu.Busca);
+            if (Menu.busca != -1){
+                removerArtista(&lista, Menu.busca);
                 printf("\nArtista removido.\n");
             }
             else{
@@ -437,8 +429,8 @@ main(){
 
         case 6:
             printf("\nLista de Artista e Bandas \n\n");
-            qsort(listaab.AB, listaab.quantidade, sizeof(Artista), Sort);
-            imprimirlistaab(&listaab);
+            qsort(lista.AB, lista.quantidade, sizeof(Artistas), sort);
+            imprimirlista(&lista);
             break;
 
         case 7:
@@ -452,7 +444,7 @@ main(){
 
     } while (Menu.opcao != 7);
 
-    Liberarlistaab(&listaab);
+    liberarLista(&lista);
 
     return 0;
 
