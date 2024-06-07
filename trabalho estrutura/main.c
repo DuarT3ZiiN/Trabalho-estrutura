@@ -4,8 +4,8 @@
 #include "main.h"
 
 typedef struct Musica {
-    char artista[100];
-    char nome[100];
+    char Artista[100];
+    char Nome[100];
     struct Musica* prox;
     struct Musica* ant;
 } Musica;
@@ -14,50 +14,50 @@ typedef struct Playlist {
     Musica* atual;
 } Playlist;
 
-Musica* CriarMusica(const char* artista, const char* nome){
-    Musica* nova_musica = (Musica*)malloc(sizeof(Musica));
-    if(nova_musica == NULL){
+Musica* criarMusica(const char*Artista, const char* Nome){
+    Musica* novaMusica = (Musica*)malloc(sizeof(Musica));
+    if(novaMusica == NULL){
         perror("Falha ao alocar memoria para uma nova musica"); //perror = printa o erro de uma maneira específica
         exit(EXIT_FAILURE);
     }
-    strcpy(nova_musica->artista, artista);
-    strcpy(nova_musica->nome, nome);
-    nova_musica->prox = nova_musica;
-    nova_musica->ant = nova_musica;
-    return nova_musica;
+    strcpy(novaMusica->Artista, Artista);
+    strcpy(novaMusica->Nome, Nome);
+    novaMusica->prox = novaMusica;
+    novaMusica->ant = novaMusica;
+    return novaMusica;
 }
 
-void AddMusica(Playlist* playlist, const char* artista, const char* nome){
-    Musica* nova_musica = CriarMusica(artista, nome);
+void addMusica(Playlist* playlist, const char* Artista, const char* Nome){
+    Musica* novaMusica = criarMusica(Artista, Nome);
     if(playlist->atual == NULL){
-        playlist->atual = nova_musica;
+        playlist->atual = novaMusica;
     }else{
         Musica* ultima = playlist->atual->ant;
-        ultima->prox = nova_musica;
-        nova_musica->ant = ultima;
-        nova_musica->prox = playlist->atual;
-        playlist->atual->ant = nova_musica;
+        ultima->prox = novaMusica;
+        novaMusica->ant = ultima;
+        novaMusica->prox = playlist->atual;
+        playlist->atual->ant = novaMusica;
     }
 }
 
-void CarregarMusicasTxt(Playlist* playlist, const char* nome_arquivo){
+void carregarMusicasTxt(Playlist* playlist, const char* nome_arquivo){
     FILE* arquivo = fopen(nome_arquivo, "r");
     if(arquivo == NULL){
         perror("Falha ao abrir o arquivo");
         exit(EXIT_FAILURE);
     }
 
-    char linha[200];
-    while (fgets(linha, sizeof(linha), arquivo)){
-        char* token = strtok(linha, ";"); //função que divide strings com tokens
+    char Texto[200];
+    while (fgets(Texto, sizeof(Texto), arquivo)){
+        char* token = strtok(Texto, ";"); //função que divide strings com tokens
         if(token){
-            char artista[100];
-            strcpy(artista, token);
+            char Artista[100];
+            strcpy(Artista, token);
             token = strtok(NULL, "\n");
             if(token){
-                char nome[100];
-                strcpy(nome, token);
-                AddMusica(playlist, artista, nome);
+                char Nome[100];
+                strcpy(Nome, token);
+                addMusica(playlist, Artista, Nome);
             }
         }
     }
@@ -65,7 +65,7 @@ void CarregarMusicasTxt(Playlist* playlist, const char* nome_arquivo){
     fclose(arquivo);
 }
 
-void PrintarPlaylist(Playlist* playlist){
+void printarPlaylist(Playlist* playlist){
     if(playlist->atual == NULL){
         printf("A playlist esta vazia.\n");
         return;
@@ -74,12 +74,12 @@ void PrintarPlaylist(Playlist* playlist){
     Musica* inicio = playlist->atual;
     Musica* temp = inicio;
     do{
-        printf("Artista: %s, Nome: %s\n", temp->artista, temp->nome);
+        printf("Artista: %s, Nome: %s\n", temp->Artista, temp->Nome);
         temp = temp->prox;
     }while (temp != inicio);
 }
 
-void SalvarMusica(Playlist* playlist, const char* nome_arquivo){
+void salvarMusica(Playlist* playlist, const char* nome_arquivo){
     FILE* arquivo = fopen(nome_arquivo, "w"); //criando aqruivo
     if(arquivo == NULL){
         perror("Falha ao abrir o arquivo");
@@ -90,7 +90,7 @@ void SalvarMusica(Playlist* playlist, const char* nome_arquivo){
         Musica* inicio = playlist->atual;
         Musica* temp = inicio;
         do {
-            fprintf(arquivo, "%s;%s\n", temp->artista, temp->nome);
+            fprintf(arquivo, "%s;%s\n", temp->Artista, temp->Nome);
             temp = temp->prox;
         } while (temp != inicio);
     }
@@ -98,37 +98,37 @@ void SalvarMusica(Playlist* playlist, const char* nome_arquivo){
     fclose(arquivo);
 }
 
-void AddMusicaPlaylist(Playlist* playlist){
-    char artista[100];
-    char nome[100];
+void addMusicaPlaylist(Playlist* playlist){
+    char Artista[100];
+    char Nome[100];
 
     printf("Digite o nome do Compositor para ser adicionado: ");
-    fgets(artista, sizeof(artista), stdin);
-    artista[strcspn(artista, "\n")] = 0; 
+    fgets(Artista, sizeof(Artista), stdin);
+    Artista[strcspn(Artista, "\n")] = 0; 
 
     printf("Digite o nome da musica para ser adicionada: ");
-    fgets(nome, sizeof(nome), stdin);
-    nome[strcspn(nome, "\n")] = 0;  
+    fgets(Nome, sizeof(Nome), stdin);
+    Nome[strcspn(Nome, "\n")] = 0;  
 
-    AddMusica(playlist, artista, nome);
-    SalvarMusica(playlist, "musicas.txt");
+    addMusica(playlist, Artista, Nome);
+    salvarMusica(playlist, "musicas.txt");
 }
 
-void RemoverMusica(Playlist* playlist){
+void removerMusica(Playlist* playlist){
     if(playlist->atual == NULL){
         printf("A playlist esta vazia.\n");
         return;
     }
 
-    char nome[100];
+    char Nome[100];
     printf("Digite o nome da musica para remover: ");
-    fgets(nome, sizeof(nome), stdin);
-    nome[strcspn(nome, "\n")] = 0;
+    fgets(Nome, sizeof(Nome), stdin);
+    Nome[strcspn(Nome, "\n")] = 0;
 
     Musica* inicio = playlist->atual;
     Musica* temp = inicio;
     do{
-        if(strcmp(temp->nome, nome) == 0){
+        if(strcmp(temp->Nome, Nome) == 0){
             if(temp->prox == temp){
                 free(temp);
                 playlist->atual = NULL;
@@ -140,7 +140,7 @@ void RemoverMusica(Playlist* playlist){
                 }
                 free(temp);
             }
-            SalvarMusica(playlist, "musicas.txt");
+            salvarMusica(playlist, "musicas.txt");
             printf("Musica removida.\n");
             return;
         }
@@ -150,22 +150,22 @@ void RemoverMusica(Playlist* playlist){
     printf("Musica nao encontrada.\n");
 }
 
-void ProcurarMusica(Playlist* playlist){
+void procurarMusica(Playlist* playlist){
     if(playlist->atual == NULL){
         printf("A playlist esta vazia.\n");
         return;
     }
 
-    char nome[100];
+    char Nome[100];
     printf("Digite o nome da musica para a busca: ");
-    fgets(nome, sizeof(nome), stdin);
-    nome[strcspn(nome, "\n")] = 0;
+    fgets(Nome, sizeof(Nome), stdin);
+    Nome[strcspn(Nome, "\n")] = 0;
 
     Musica* inicio = playlist->atual;
     Musica* temp = inicio;
     do{
-        if(strcmp(temp->nome, nome) == 0){
-            printf("Artista: %s, Nome: %s\n", temp->artista, temp->nome);
+        if(strcmp(temp->Nome, Nome) == 0){
+            printf("Artista: %s, Nome: %s\n", temp->Artista, temp->Nome);
             return;
         }
         temp = temp->prox;
@@ -177,7 +177,7 @@ void ProcurarMusica(Playlist* playlist){
 void Avancar(Playlist* playlist){
     if(playlist->atual){
         playlist->atual = playlist->atual->prox;
-        printf("Musica atual: Artista: %s, Nome: %s\n", playlist->atual->artista, playlist->atual->nome);
+        printf("Musica atual: Artista: %s, Nome: %s\n", playlist->atual->Artista, playlist->atual->Nome);
     }else{
         printf("A playlist esta vazia.\n");
     }
@@ -186,13 +186,13 @@ void Avancar(Playlist* playlist){
 void Voltar(Playlist* playlist){
     if(playlist->atual){
         playlist->atual = playlist->atual->ant;
-        printf("Musica atual: Artista: %s, Nome: %s\n", playlist->atual->artista, playlist->atual->nome);
+        printf("Musica atual: Artista: %s, Nome: %s\n", playlist->atual->Artista, playlist->atual->Nome);
     }else{
         printf("A playlist esta vazia.\n");
     }
 }
 
-void SortNome(Playlist* playlist){
+void sortNome(Playlist* playlist){
     if(!playlist->atual || playlist->atual->prox == playlist->atual){
         return;
     }
@@ -202,15 +202,15 @@ void SortNome(Playlist* playlist){
     do{
         Musica* j = i->prox;
         while(j != inicio){
-            if(strcmp(i->nome, j->nome) > 0){
+            if(strcmp(i->Nome, j->Nome) > 0){
                 char temp_artista[100];
                 char temp_nome[100];
-                strcpy(temp_artista, i->artista);
-                strcpy(temp_nome, i->nome);
-                strcpy(i->artista, j->artista);
-                strcpy(i->nome, j->nome);
-                strcpy(j->artista, temp_artista);
-                strcpy(j->nome, temp_nome);
+                strcpy(temp_artista, i->Artista);
+                strcpy(temp_nome, i->Nome);
+                strcpy(i->Artista, j->Artista);
+                strcpy(i->Nome, j->Nome);
+                strcpy(j->Artista, temp_artista);
+                strcpy(j->Nome, temp_nome);
             }
             j = j->prox;
         }
@@ -218,19 +218,19 @@ void SortNome(Playlist* playlist){
     }while(i != inicio);
 }
 
-void PrintandoSort(Playlist* playlist){
-    SortNome(playlist);
-    PrintarPlaylist(playlist);
+void printSort(Playlist* playlist){
+    sortNome(playlist);
+    printarPlaylist(playlist);
 }
 
 
 int main(){
     Playlist playlist = {NULL};
 
-    CarregarMusicasTxt(&playlist, "musicas.txt");
+    carregarMusicasTxt(&playlist, "musicas.txt");
 
     printf("================================\n");
-    printf("Menu para Interacao:\n");
+    printf("Menu de Interacao:\n");
     printf("1. Exibir playlist na ordem de cadastro\n");
     printf("2. Exibir playlist ordenada pelo nome da musica\n");
     printf("3. Adicionar nova musica\n");
@@ -251,19 +251,19 @@ int main(){
 
         switch (escolha) {
             case 1:
-                PrintarPlaylist(&playlist);
+                printarPlaylist(&playlist);
                 break;
             case 2:
-                PrintandoSort(&playlist);
+                printSort(&playlist);
                 break;
             case 3:
-                AddMusicaPlaylist(&playlist);
+                addMusicaPlaylist(&playlist);
                 break;
             case 4:
-                RemoverMusica(&playlist);
+                removerMusica(&playlist);
                 break;
             case 5:
-                ProcurarMusica(&playlist);
+                procurarMusica(&playlist);
                 break;
             case 6:
                 Avancar(&playlist);
