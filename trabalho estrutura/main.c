@@ -132,7 +132,7 @@ void ordenar(Lista *lista, const Artistas *artistas, const char *arquivo)
 
     for (int i = 0; i < lista->quantidade; i++)
     {
-        fprintf(albumArquivo, "%s\n%s\n%s\n%s\n-------------\n", lista->AB[i].nome, lista->AB[i].genero, lista->AB[i].album);
+        fprintf(albumArquivo, "%s\n%s\n%s\n-------------\n", lista->AB[i].nome, lista->AB[i].genero, lista->AB[i].album);
     }
 
     fclose(albumArquivo);
@@ -175,7 +175,7 @@ void removerArtista(Lista *lista, int posicao)
             {
                 if (parametro / 4 != posicao)
                 {
-                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", artistas.nome, artistas.genero, artistas.album);
+                    fprintf(arquivoTemporario, "%s\n%s\n%s\n-------------\n", artistas.nome, artistas.genero, artistas.album);
                 }
             }
             parametro = 0;
@@ -256,11 +256,11 @@ void editarArtista(Lista *lista, int posicao, const Artistas *novoArtista)
             {
                 if (parametro / 4 != posicao)
                 {
-                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", artistas.nome, artistas.genero, artistas.album);
+                    fprintf(arquivoTemporario, "%s\n%s\n%s\n-------------\n", artistas.nome, artistas.genero, artistas.album);
                 }
                 else
                 {
-                    fprintf(arquivoTemporario, "%s\n%s\n%s\n%s\n-------------\n", novoArtista->nome, novoArtista->genero, novoArtista->album);
+                    fprintf(arquivoTemporario, "%s\n%s\n%s\n-------------\n", novoArtista->nome, novoArtista->genero, novoArtista->album);
                 }
             }
             parametro = 0;
@@ -304,12 +304,12 @@ int buscaSequencial(Lista *lista, char *album)
     return -1;
 }
 
-main()
+int main()
 {
 
     Lista lista;
     Menu Menu;
-    iniciandolista(&lista);
+    iniciandoLista(&lista);
 
     FILE *arquivo = fopen("artistas.txt", "r");
     if (arquivo == NULL)
@@ -330,7 +330,7 @@ main()
         {
             if (parametro >= 4)
             {
-                InserindoArtista(&lista, &artistas);
+                inserindoArtistas(&lista, &artistas);
             }
             parametro = 0;
         }
@@ -377,8 +377,8 @@ main()
         case 1:
             printf("\n\nInforme o Artista ou Banda para pesquisa: ");
             getchar();
-            fgets(Menu.busca, sizeof(Menu.busca), stdin);
-            Menu.busca[strcspn(Menu.buscaNome, "\n")] = '\0';
+            fgets(Menu.buscaNome, sizeof(Menu.buscaNome), stdin);
+            Menu.buscaNome[strcspn(Menu.buscaNome, "\n")] = '\0';
 
             Menu.busca = buscaBinaria(&lista, Menu.buscaNome);
 
@@ -429,7 +429,7 @@ main()
             fgets(artistas.album, sizeof(artistas.album), stdin);
             artistas.album[strcspn(artistas.album, "\n")] = '\0';
 
-            Ordenando(&lista, &artistas, "artistas.txt");
+            ordenar(&lista, &artistas, "artistas.txt");
             printf("\nArtista adicionado.\n");
             break;
 
@@ -454,7 +454,7 @@ main()
                 strcpy(artistas.nome, Menu.novaMusica);
                 strcpy(artistas.genero, Menu.novoGenero);
 
-                editar_Artista(&lista, Menu.busca, &artistas);
+                editarArtista(&lista, Menu.busca, &artistas);
                 printf("\nArtista editado.\n");
             }
             else
@@ -485,7 +485,7 @@ main()
         case 6:
             printf("\nLista de Artista e Bandas \n\n");
             qsort(lista.AB, lista.quantidade, sizeof(Artistas), sort);
-            imprimirlista(&lista);
+            imprimirLista(&lista);
             break;
 
         case 7:
